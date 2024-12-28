@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إدارة العهدة</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body {
+      background-color: #a0bedb;
+      font-family: 'Cairo', sans-serif;
+      direction: rtl; /* دعم اللغة العربية */
+    }
+    .container {
+      margin-top: 20px;
+    }
+    .card {
+      border-radius: 10px;
+    }
+    .icon-circle {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- عنوان -->
+    <h2 class="text-center my-4 text-primary">إدارة العهدة اليومية</h2>
+
+    <!-- زر الإضافة -->
+    <div class="mb-4 text-end">
+      <button class="btn btn-success" id="addDelegateBtn">
+        <i class="fa-solid fa-plus"></i> إضافة مندوب
+      </button>
+    </div>
+
+    <!-- قائمة المناديب -->
+    <div id="delegateList">
+      <!-- ستتم إضافة البطاقات هنا ديناميكياً -->
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- JavaScript -->
+  <script>
+    const delegateList = document.getElementById('delegateList');
+    const addDelegateBtn = document.getElementById('addDelegateBtn');
+
+    // بيانات المندوبين
+    let delegates = [
+      { name: 'أحمد', cash: 500, invoices: 480 },
+      { name: 'خالد', cash: 500, invoices: 500 },
+    ];
+
+    // وظيفة لعرض البطاقات
+    function renderDelegates() {
+      delegateList.innerHTML = ''; // تنظيف القائمة
+      delegates.forEach((delegate, index) => {
+        const difference = delegate.invoices - delegate.cash;
+        const status = difference === 0 ? 'مطابقة' : difference > 0 ? 'زيادة' : 'نقص';
+        const badgeClass = difference === 0 ? 'bg-success' : difference > 0 ? 'bg-danger' : 'bg-warning';
+
+        delegateList.innerHTML += `
+          <div class="card shadow-sm mb-3">
+            <div class="card-body d-flex align-items-center">
+              <div class="icon-circle bg-primary-light text-primary me-3">
+                <i class="fa-solid fa-user"></i>
+              </div>
+              <div class="flex-grow-1">
+                <h5 class="card-title mb-1">${delegate.name}</h5>
+                <p class="mb-1"><strong>العهدة:</strong> ${delegate.cash} ريال</p>
+                <p class="mb-1"><strong>الفواتير:</strong> ${delegate.invoices} ريال</p>
+              </div>
+              <div>
+                <span class="badge ${badgeClass}">${status}</span>
+              </div>
+              <div class="ms-3">
+                <button class="btn btn-primary btn-sm" onclick="editDelegate(${index})">
+                  <i class="fa-solid fa-pen"></i> تعديل
+                </button>
+                <button class="btn btn-danger btn-sm" onclick="deleteDelegate(${index})">
+                  <i class="fa-solid fa-trash"></i> حذف
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // وظيفة لإضافة مندوب
+    addDelegateBtn.addEventListener('click', () => {
+      const name = prompt('أدخل اسم المندوب:');
+      const cash = parseFloat(prompt('أدخل قيمة العهدة:'));
+      const invoices = parseFloat(prompt('أدخل قيمة الفواتير:'));
+      if (name && !isNaN(cash) && !isNaN(invoices)) {
+        delegates.push({ name, cash, invoices });
+        renderDelegates();
+      } else {
+        alert('تأكد من إدخال البيانات بشكل صحيح!');
+      }
+    });
+
+    // وظيفة لتعديل مندوب
+    function editDelegate(index) {
+      const delegate = delegates[index];
+      const name = prompt('أدخل اسم المندوب الجديد:', delegate.name);
+      const cash = parseFloat(prompt('أدخل قيمة العهدة الجديدة:', delegate.cash));
+      const invoices = parseFloat(prompt('أدخل قيمة الفواتير الجديدة:', delegate.invoices));
+      if (name && !isNaN(cash) && !isNaN(invoices)) {
+        delegates[index] = { name, cash, invoices };
+        renderDelegates();
+      } else {
+        alert('تأكد من إدخال البيانات بشكل صحيح!');
+      }
+    }
+
+    // وظيفة لحذف مندوب
+    function deleteDelegate(index) {
+      if (confirm('هل أنت متأكد من حذف هذا المندوب؟')) {
+        delegates.splice(index, 1);
+        renderDelegates();
+      }
+    }
+
+    // عرض البطاقات عند تحميل الصفحة
+    renderDelegates();
+  </script>
+</body>
+</html>
